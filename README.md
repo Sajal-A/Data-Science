@@ -10,7 +10,7 @@ Welcome to the **Data Science Repository**! This is your go-to resource for expl
 | **📊 Python DS tools**   | Tutorials on numpy, pandas, matplotlib, plotly etc.   | [Explore](./ds_tools/)        |
 | **📊 Data Analysis**     | Tutorials on data cleaning, wrangling, and insights   | [Explore](./data-analysis/)        |
 | **🤖 Machine Learning**  | ML models for regression, classification, clustering  | [Dive In](./machine-learning/)     |
-| **🧠 Deep Learning**     | Neural network projects with TensorFlow & PyTorch     | [Discover](./deep-learning/)       |
+| **🧠 Deep Learning**     | Neural network projects with TensorFlow & PyTorch     | [Discover](./deep_learning/)       |
 | **📚 Resources**         | Cheatsheets, study guides, and helpful links          | [Learn More](./resources/)         |
 
 ---
