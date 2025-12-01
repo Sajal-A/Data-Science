@@ -100,9 +100,14 @@ At the core of deep learning are neural networks. Just like our brains have neur
   - Automated translation of text between languages.
   - Summarizing or explaining complex documents.
   
+**Foundational Models**
+- `Amazon Bedrock provides access to a choice of high-performing FMs from leading AI companies like AI21 Labs, Anthropic, Cohere, Meta, Mistral AI, Stability AI, and Amazon.
+With these FMs as a foundation, you can further optimize their outputs with prompt engineering, fine-tuning, or RAG.`
+- *Let's understand the concept of FMs*
+- Generative AI is powered by models that are pretrained on internet-scale data, and these models are called foundation models (FMs).  With FMs, instead of gathering labeled data for each model and training multiple models as in traditional ML, you can adapt a single FM to perform multiple tasks. These tasks include text generation, text summarization, information extraction, image generation, chatbot interactions, and question answering. FMs can also serve as the starting point for developing more specialized models.
 
-
-    
+**Explain the lifecycle of a Foundational Model**
+The foundation model lifecycle is a comprehensive process that involves several stages, each playing a crucial role in developing and deploying effective and reliable foundation models.
 
 
 
