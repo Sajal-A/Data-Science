@@ -62,18 +62,62 @@
 - Random Forests reduce variance by building many diverse trees and averaging their predictions, which cancels out individual tree overfitting and produces a more stable, accurate model.
 
 **How will you detect Overfitting and Underfitting in practice?**
-- Underfitting occurs when your model has high bias. The symptoms are unmistakable: poor performance on both training and validation data, with training and validation errors that are similar but both unacceptably high. It's like studying for an exam by only reading the chapter summaries—you'll perform poorly on both practice tests and the real exam because you haven't captured enough detail. In practical terms, if your linear regression model achieves only 60% accuracy on both training and test data when predicting whether emails are spam, you're likely dealing with underfitting. The model isn't complex enough to capture the nuanced patterns that distinguish spam from legitimate emails. You might notice that the model treats all emails with certain keywords the same way, regardless of context.
+- *Underfitting* occurs when your model has high bias. The symptoms are unmistakable: poor performance on both training and validation data, with training and validation errors that are similar but both unacceptably high. It's like studying for an exam by only reading the chapter summaries—you'll perform poorly on both practice tests and the real exam because you haven't captured enough detail. In practical terms, if your linear regression model achieves only 60% accuracy on both training and test data when predicting whether emails are spam, you're likely dealing with underfitting. The model isn't complex enough to capture the nuanced patterns that distinguish spam from legitimate emails. You might notice that the model treats all emails with certain keywords the same way, regardless of context.
 
-- Overfitting manifests as high variance. The classic symptoms include excellent performance on training data but significantly worse performance on validation or test data. Your model has essentially memorized the training examples rather than learning generalizable patterns. It's like a student who memorizes all the practice problems but can't solve new problems because they never learned the underlying principles. A telltale sign of overfitting is when your training accuracy reaches 95% but your validation accuracy hovers around 70%.
+- *Overfitting* manifests as high variance. The classic symptoms include excellent performance on training data but significantly worse performance on validation or test data. Your model has essentially memorized the training examples rather than learning generalizable patterns. It's like a student who memorizes all the practice problems but can't solve new problems because they never learned the underlying principles. A telltale sign of overfitting is when your training accuracy reaches 95% but your validation accuracy hovers around 70%.
 
+# Linear Regression
 
+**What is Linear Regression?**
+- linear regression is about modeling relationships. Imagine you want to predict someone’s weight from their height. Intuitively, taller people tend to weigh more. Linear regression takes this kind of intuition and expresses it in the form of a mathematical equation that describes a straight-line relationship between input variables (features) and an output variable (target).
 
+  - The simplest form is *simple linear regression*, where we have one feature and one target. The equation looks like this:
+`y=β0+β1x+ϵ`.
+    - y is the target we want to predict,
+    - x is the input feature,
+    - β0 is the intercept (the value of y when x=0),
+    - β1 is the slope (how much y changes when x increases by 1 unit), and
+    - ϵ represents the error term — the part of y not explained by our linear model.
 
+  -  When we deal with, we are dealing with more than one input varibales. That's Where *multiple linear regression* come is. The equation generalizes to: `y=β0+β1x1+β2x2+⋯+βnxn+ϵ`
+  -  Instead of fitting a straight line, we are fitting a hyperplane in an n-dimensional space. Each coefficient βi​ represents the contribution of a specific feature to the target, while keeping other features constant.
+  
 
+**What is ploynomial regression?**
+- Polynomial regression is an extension of linear regression where higher-degree terms are added to model non-linear relationships. The general form of the equation for a polynomial regression of degree n is: `y=β0+β1x+β2x^2+…+βnx^n+ϵ`
+  - y is the dependent variable.
+  - x is the independent variable.
+  - β0, β1, β2 are the coefficients of the polynimals terms.
+  - n is the degree of the polynomial.
+  - ϵ reprsents the error term.
+- Choosing the right polynomial degree n is important: a higher degree may fit the data more closely but it can lead to overfitting. The degree should be selected based on the complexity of the data. Once the model is trained, it can be used to make predictions on new data, capturing non-linear relationships and providing a more accurate model for real-world applications.
 
+**What are the key assumptions of linear regression and why do they matter?**
+- Linear regression is elegant and powerful, but it comes with a set of assumptions. These assumptions are important because they determine whether the model’s predictions and interpretations are reliable.
+- *Linearity* : We assume that the relationship between the features and the target is linear. For example, if you are predicting house prices using square footage, the model assumes that as square footage increases, the price increases or decreases at a constant rate. If the true relationship is curved or more complex, a simple linear regression will underperform.
+  
+  - *How to test*: Plot the predicted values against the residuals (errors). If the residuals show a random scatter around zero, linearity is likely satisfied. But if you see clear curves or patterns, the relationship might not be linear.
+  - *Fixes if violated*: Apply transformations (e.g., log, square root), add polynomial features, or switch to a non-linear model.
 
+- *Independence of errors* : This means that the errors (or residuals) for one data point should not be correlated with those for another. In practice, this assumption is often violated in time-series data where yesterday’s error can influence today’s. If independence is broken, the model may appear more confident than it actually is, leading to misleading conclusions.
 
+  - *How to test*: Use the Durbin-Watson test. Values around 2 suggest independence; values closer to 0 or 4 indicate positive or negative autocorrelation, respectively.
+  - *Fixes if violated*: Consider time-series models like ARIMA or add lag variables to capture temporal dependencies.
 
+- *Homoscedasticity* : Which is just a fancy way of saying that the errors have constant variance. In other words, the spread of residuals should be roughly the same across all levels of the predicted values. If the variance of errors grows larger for higher values of the target, we have heteroscedasticity. This can cause the model to give too much weight to certain regions of the data.
+  
+  - *How to test* : Plot residuals against predicted values. If the spread of residuals is roughly even, the assumption holds. A funnel-shaped pattern (residuals growing larger at one end) suggests heteroscedasticity. You can also use statistical tests like Breusch–Pagan or White’s test.
+  - *Fixes if violated* : Transform the dependent variable (e.g., log(y)), or use Weighted Least Squares.
+
+- *Normality of errors* : While the target itself does not need to be normally distributed, we expect the residuals to roughly follow a normal distribution. This matters most when we are performing hypothesis testing or constructing confidence intervals. A strongly non-normal error distribution makes these statistical tests unreliable.
+  
+  - *How to test*: Plot a histogram or a Q–Q plot of residuals. If residuals follow a straight diagonal line in the Q–Q plot, the assumption is satisfied. You can also use statistical tests like the Shapiro–Wilk test.
+  - *Fixes if violated*: With large datasets, this assumption is less critical (Central Limit Theorem helps). Otherwise, consider transformations or non-parametric methods.
+
+- *Multicollinearity* : Linear regression assumes no multicollinearity among the independent variables. Multicollinearity means that two or more features are highly correlated with each other. For example, if you try to predict salary using both “years of experience” and “age,” the model might struggle because these features carry overlapping information. High multicollinearity inflates the variance of coefficient estimates, making them unstable and hard to interpret.
+  
+  - *How to test* : Compute the Variance Inflation Factor (VIF) for each predictor. A VIF above 5 (sometimes 10) indicates problematic multicollinearity. A correlation heatmap is also a quick way to spot highly correlated features.
+  - *Fixes if violated* : Remove one of the correlated variables, combine them into a single feature, or use regularization methods like Ridge or Lasso regression.
 
 
 
