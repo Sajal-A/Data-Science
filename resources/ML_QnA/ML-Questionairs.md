@@ -119,5 +119,53 @@
   - *How to test* : Compute the Variance Inflation Factor (VIF) for each predictor. A VIF above 5 (sometimes 10) indicates problematic multicollinearity. A correlation heatmap is also a quick way to spot highly correlated features.
   - *Fixes if violated* : Remove one of the correlated variables, combine them into a single feature, or use regularization methods like Ridge or Lasso regression.
 
+**How Linear Regression optimized? OR How does the model learn?**
+- The key idea is to choose the coefficients that make the predictions as close as possible to the actual values in the data. This is where optimization comes in.
+The most common method is *Ordinary Least Squares (OLS)*. OLS works by minimizing the sum of squared residuals — the squared difference between the actual value $y^i$ and the predicted value (yhat-i) for each data point. The cost function looks like this: $J(\beta) = \sum_{i=1}^{n} (y_i - \bar{y_i})^2$
+- **Why squared residuals?**
+- Squaring ensures that positive and negative errors don’t cancel out, and it penalizes larger errors more heavily than smaller ones. By minimizing this function, OLS finds the “line of best fit.”
+
+**Optimzation of Cost Function in Linear Regression**
+
+- **How does ordinary least squares (OLS) estimate coefficients?**
+- OLS minimizes the sum of squared residuals by solving a closed-form equation. The solution is: $\beta = (X^TX)^{-1}X^Ty$.
+- For relatively small datasets with not too many features, we can directly compute the optimal coefficients using linear algebra.
+- Here, X is the feature matrix, y is the target vector, and β-hat​ is the vector of coefficients. This solution comes from setting the derivative of the cost function to zero and solving for coefficients. It’s exact, fast for low-dimensional data, and forms the mathematical foundation of linear regression.
+- However, the matrix inversion step becomes computationally expensive when the number of features is very large, and sometimes the matrix is not even invertible (especially with multicollinearity).
+
+- **Gradient Descent (Iterative Method)**
+- For larger datasets or high-dimensional problems, gradient descent is often preferred. Instead of solving the equations directly, gradient descent takes small steps in the direction that reduces the cost function the most.
+The update rule for each coefficient looks like this:
+- $\beta_j := \beta_j - \alpha \frac{\partial J}{\partial b_j}$
+- Here, α is the learning rate, which controls how big each step is. If α is too small, training is slow; if it’s too large, the algorithm may overshoot and fail to converge.
+- Gradient descent is more flexible than the closed-form solution. It can handle massive datasets, can be parallelized, and forms the basis of how many modern machine learning algorithms (like neural networks) are trained.
+
+**What are the common evaluation metrics used in regression problem?**
+- Different evaluation metrics capture different aspects of model performance:
+- `Mean Squared Error (MSE)`:
+-  MSE calculates the average of the squared differences between the actual values and the predicted values. The formula looks like this: $MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \bar{y_i})^2$
+- The squaring ensures that larger errors are penalized more heavily than smaller ones. MSE is widely used because it connects directly to the optimization objective in ordinary least squares regression. However, since it squares the errors, it is sensitive to outliers.
+
+- `Root Mean Squared Error (RMSE)`:
+- $\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \bar{y}_i)^2}$
+- The advantage of RMSE is that it is in the same units as the target variable, which makes it more interpretable. For example, if you are predicting house prices in dollars, RMSE will also be in dollars. Like MSE, though, it still emphasizes large errors because of the squaring.
+
+- `Mean Absolute Error (MAE)`:
+- $\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} | (y_i - \bar{y}_i) |$
+- MAE treats all errors equally, regardless of their size. This makes it more robust to outliers compared to MSE or RMSE. For instance, if your dataset has a few extreme values that are hard to predict, MAE will give a fairer picture of performance than MSE.
+
+- `Coefficient of Determination, or R-squared (R^2)`
+- R-squared measures the proportion of variance in the target variable that is explained by the model. The formula is:
+- $$ R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2} $$
+- Here, the denominator represents the total variance in the data (the differences between actual values and their mean), and the numerator is the unexplained variance (the residual sum of squares). An R^2 of 1 means perfect predictions, while an R^2 of 0 means the model does no better than predicting the mean of the target.
+  - One limitation of R^2 is that it always increases when you add more features, even if those features are not truly helpful. 
+
+- `Adjusted R-Squared`
+- Adjusted R-squared, which penalizes the addition of irrelevant variables. The formula is:
+- $ \bar{R}^2 = 1 - (1 - R^2)\frac{n - 1}{n - k - 1} $
+- where n is the number of observations and p is the number of predictors. This adjusted version helps us compare models with different numbers of features more fairly.
+
+
+
 
 
