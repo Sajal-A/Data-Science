@@ -143,27 +143,59 @@ The update rule for each coefficient looks like this:
 **What are the common evaluation metrics used in regression problem?**
 - Different evaluation metrics capture different aspects of model performance:
 - `Mean Squared Error (MSE)`:
--  MSE calculates the average of the squared differences between the actual values and the predicted values. The formula looks like this: $MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \bar{y_i})^2$
+-  MSE calculates the average of the squared differences between the actual values and the predicted values. The formula looks like this: $MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y_i})^2$
 - The squaring ensures that larger errors are penalized more heavily than smaller ones. MSE is widely used because it connects directly to the optimization objective in ordinary least squares regression. However, since it squares the errors, it is sensitive to outliers.
 
 - `Root Mean Squared Error (RMSE)`:
-- $\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \bar{y}_i)^2}$
+- $\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}$
 - The advantage of RMSE is that it is in the same units as the target variable, which makes it more interpretable. For example, if you are predicting house prices in dollars, RMSE will also be in dollars. Like MSE, though, it still emphasizes large errors because of the squaring.
 
 - `Mean Absolute Error (MAE)`:
-- $\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} | (y_i - \bar{y}_i) |$
+- $\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} | (y_i - \hat{y}_i) |$
 - MAE treats all errors equally, regardless of their size. This makes it more robust to outliers compared to MSE or RMSE. For instance, if your dataset has a few extreme values that are hard to predict, MAE will give a fairer picture of performance than MSE.
 
 - `Coefficient of Determination, or R-squared (R^2)`
 - R-squared measures the proportion of variance in the target variable that is explained by the model. The formula is:
-- $$ R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2} $$
+- $R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y})^2 } {\sum_{i=1}^{n} (y_i - \bar{y}_i)^2}$
 - Here, the denominator represents the total variance in the data (the differences between actual values and their mean), and the numerator is the unexplained variance (the residual sum of squares). An R^2 of 1 means perfect predictions, while an R^2 of 0 means the model does no better than predicting the mean of the target.
   - One limitation of R^2 is that it always increases when you add more features, even if those features are not truly helpful. 
 
 - `Adjusted R-Squared`
 - Adjusted R-squared, which penalizes the addition of irrelevant variables. The formula is:
-- $ \bar{R}^2 = 1 - (1 - R^2)\frac{n - 1}{n - k - 1} $
+- $\bar{R}^2 = 1 - (1 - R^2)(\frac{n - 1}{n - P - 1})$
 - where n is the number of observations and p is the number of predictors. This adjusted version helps us compare models with different numbers of features more fairly.
+
+**Why might you prefer MAE over RMSE as an evaluation metric?**
+- Both metrics measure prediction error, but they behave differently. RMSE squares errors, which means it penalizes large deviations much more heavily. This is desirable when large mistakes are unacceptable, such as in financial forecasting. MAE, on the other hand, treats all errors equally and is more robust to outliers. For example, if your dataset has a few extremely unusual house prices, RMSE might exaggerate their influence, whereas MAE will provide a fairer picture of typical model performance.
+
+**What happens if residuals are not normally distributed?**
+- Strictly speaking, linear regression does not require residuals to be normal for coefficient estimation. However, normality is important when you want to perform statistical inference — for example, computing confidence intervals or conducting hypothesis tests on coefficients. If residuals deviate strongly from normality, p-values and confidence intervals become unreliable. In practice, with large datasets, the Central Limit Theorem mitigates this issue. Otherwise, you can use bootstrapping or non-parametric methods to obtain more reliable inference.
+
+**How do you detect and handle heteroscedasticity?**
+- Heteroscedasticity occurs when the variance of residuals changes across different levels of predicted values. To detect it, you can plot residuals against predictions — a funnel-shaped pattern indicates heteroscedasticity. Statistical tests like Breusch–Pagan can also confirm it.
+- If heteroscedasticity is present, standard errors of coefficients are biased, which affects hypothesis testing. Remedies include transforming the target variable (e.g., log-transform), or using Weighted Least Squares, which gives less weight to data points with higher variance.
+
+**What happens if you include irrelevant variables in a regression model?**
+Including irrelevant predictors increases model complexity without improving predictive power. In OLS, this can inflate the variance of coefficient estimates, making them less stable. It also reduces interpretability since you are estimating more parameters than necessary. From an evaluation standpoint, R² will increase slightly even if the variable adds no true value, which can mislead you. This is why Adjusted R² or regularization methods like Lasso are used to discourage unnecessary features.
+
+**How would you evaluate a regression model on imbalanced error costs?**
+In some applications, not all errors are equal. For example, in predicting demand for a product, underestimating demand may be costlier than overestimating. Standard metrics like MAE or RMSE treat errors symmetrically. In such cases, you might define a custom cost function that penalizes certain types of errors more heavily, or use Quantile Regression, which shifts focus toward under- or over-estimation. This shows that you can adapt regression to real business constraints.
+
+**How do you handle missing data in regression?**
+Missing data can bias coefficient estimates if not addressed properly. Common strategies include imputation with mean, median, or mode, but these may distort variance. A more robust approach is regression imputation or using models like k-Nearest Neighbors to estimate missing values. In high-stakes scenarios, multiple imputation is used to account for uncertainty. Importantly, you must also assess why data is missing — whether it is Missing Completely at Random (MCAR), Missing at Random (MAR), or Missing Not at Random (MNAR) — because the choice of strategy depends on this mechanism.
+
+**How feature scaling is important to Linear Regression?**
+- Although linear regression itself does not strictly require features to be on the same scale, scaling becomes essential when you extend linear regression with regularization methods like Ridge or Lasso. Without scaling, features with larger numeric ranges can dominate the penalty terms and bias the coefficients. A good practice is to standardize or normalize features before fitting the model when regularization is involved.
+
+**How to avoid overfitting in regression problem?**
+- Overfitting is another challenge in regression. With too many predictors, the model may start capturing noise instead of signal. This is where regularization techniques like Ridge regression and Lasso regression become valuable.
+- Ridge regression adds a penalty term proportional to the square of the coefficients:
+    - $J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y_i})^2 + \lambda \sum_{j=1}^{p} \beta_j^2$
+    - This discourages large coefficients and stabilizes the model in the presence of multicollinearity.
+- Lasso regression, on the other hand, adds a penalty based on the absolute value of coefficients:
+    - $J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y_i})^2 + \lambda \sum_{j=1}^{p} | \beta_j |$
+    - The absolute penalty has the effect of driving some coefficients exactly to zero, which makes Lasso a useful method for feature selection.
+    - 
 
 
 
