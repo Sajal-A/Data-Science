@@ -176,13 +176,13 @@ The update rule for each coefficient looks like this:
 - If heteroscedasticity is present, standard errors of coefficients are biased, which affects hypothesis testing. Remedies include transforming the target variable (e.g., log-transform), or using Weighted Least Squares, which gives less weight to data points with higher variance.
 
 **What happens if you include irrelevant variables in a regression model?**
-Including irrelevant predictors increases model complexity without improving predictive power. In OLS, this can inflate the variance of coefficient estimates, making them less stable. It also reduces interpretability since you are estimating more parameters than necessary. From an evaluation standpoint, R² will increase slightly even if the variable adds no true value, which can mislead you. This is why Adjusted R² or regularization methods like Lasso are used to discourage unnecessary features.
+- Including irrelevant predictors increases model complexity without improving predictive power. In OLS, this can inflate the variance of coefficient estimates, making them less stable. It also reduces interpretability since you are estimating more parameters than necessary. From an evaluation standpoint, R² will increase slightly even if the variable adds no true value, which can mislead you. This is why Adjusted R² or regularization methods like Lasso are used to discourage unnecessary features.
 
 **How would you evaluate a regression model on imbalanced error costs?**
-In some applications, not all errors are equal. For example, in predicting demand for a product, underestimating demand may be costlier than overestimating. Standard metrics like MAE or RMSE treat errors symmetrically. In such cases, you might define a custom cost function that penalizes certain types of errors more heavily, or use Quantile Regression, which shifts focus toward under- or over-estimation. This shows that you can adapt regression to real business constraints.
+- In some applications, not all errors are equal. For example, in predicting demand for a product, underestimating demand may be costlier than overestimating. Standard metrics like MAE or RMSE treat errors symmetrically. In such cases, you might define a custom cost function that penalizes certain types of errors more heavily, or use Quantile Regression, which shifts focus toward under- or over-estimation. This shows that you can adapt regression to real business constraints.
 
 **How do you handle missing data in regression?**
-Missing data can bias coefficient estimates if not addressed properly. Common strategies include imputation with mean, median, or mode, but these may distort variance. A more robust approach is regression imputation or using models like k-Nearest Neighbors to estimate missing values. In high-stakes scenarios, multiple imputation is used to account for uncertainty. Importantly, you must also assess why data is missing — whether it is Missing Completely at Random (MCAR), Missing at Random (MAR), or Missing Not at Random (MNAR) — because the choice of strategy depends on this mechanism.
+- Missing data can bias coefficient estimates if not addressed properly. Common strategies include imputation with mean, median, or mode, but these may distort variance. A more robust approach is regression imputation or using models like k-Nearest Neighbors to estimate missing values. In high-stakes scenarios, multiple imputation is used to account for uncertainty. Importantly, you must also assess why data is missing — whether it is Missing Completely at Random (MCAR), Missing at Random (MAR), or Missing Not at Random (MNAR) — because the choice of strategy depends on this mechanism.
 
 **How feature scaling is important to Linear Regression?**
 - Although linear regression itself does not strictly require features to be on the same scale, scaling becomes essential when you extend linear regression with regularization methods like Ridge or Lasso. Without scaling, features with larger numeric ranges can dominate the penalty terms and bias the coefficients. A good practice is to standardize or normalize features before fitting the model when regularization is involved.
@@ -195,7 +195,16 @@ Missing data can bias coefficient estimates if not addressed properly. Common st
 - Lasso regression, on the other hand, adds a penalty based on the absolute value of coefficients:
     - $J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y_i})^2 + \lambda \sum_{j=1}^{p} | \beta_j |$
     - The absolute penalty has the effect of driving some coefficients exactly to zero, which makes Lasso a useful method for feature selection.
-    - 
+
+**How outliers effect your linear regression model?**
+- Outlier is an another pitfall. Since linear regression minimizes squared errors, outliers can disproportionately influence the coefficients. For example, if most house prices in a dataset are between $200k and $500k, but one mansion is $5 million, the fitted line may shift dramatically because of that single point. Checking residual plots and using robust regression techniques are ways to mitigate this issue.
+
+**What is the difference between R² and Adjusted R²?**
+- R² measures the proportion of variance in the target explained by the model. However, it always increases when you add more features, even if they are irrelevant. Adjusted R² corrects for this by penalizing the inclusion of unnecessary variables: $\bar{R}^2 = 1 - (1 - R^2)(\frac{n - 1}{n - P - 1})$
+- where n is the number of observations and p is the number of predictors. Adjusted R² is therefore more reliable for comparing models with different numbers of features, especially in interview case studies where feature selection is part of the exercise.
+
+
+
 
 
 
