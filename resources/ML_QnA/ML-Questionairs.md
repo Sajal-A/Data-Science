@@ -204,7 +204,278 @@ The update rule for each coefficient looks like this:
 - where n is the number of observations and p is the number of predictors. Adjusted R² is therefore more reliable for comparing models with different numbers of features, especially in interview case studies where feature selection is part of the exercise.
 
 
+# Logistic Regression
 
+*What is Logistic Regression?*
+
+- Logistic regression: a supervised learning algorithm that can be used to classify data into categories, or classes, 
+by predicting the probability that an observation falls into a particular class based on its features.
+
+*From Linear Regression to Classification*
+
+- Linear Regression fits a straight line through data to predict continuous outcomes like house prices or sales numbers. 
+Mathematically, it looks like this:
+	$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon$
+
+- The output y can take any value — from negative infinity to positive infinity.
+But what if we’re not trying to predict a continuous value?
+What if we want to predict whether something is yes or no, spam or not spam, disease or no disease?
+
+That’s where Linear Regression fails — because probabilities must always lie between 0 and 1, 
+while a straight line can easily predict values outside that range.
+
+- *Enter Logistic Regression*
+	- Logistic Regression fixes this by transforming the linear output into a probability using a special function called the sigmoid (or logistic) function.
+	- The sigmoid function takes any real number and “squeezes” it into a value between 0 and 1:
+	$P(y=1 \mid \mathbf{x}) = \frac{1}{1 + e^{-z}}$
+	$z = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n$
+	
+	- Here,
+		- P represents the probability of the positive class for example, “1” = spam, churn, fraud, etc.).
+		- 1−p represents the probability of the negative class (“0”).
+		- The coefficients βi​ determine how strongly each feature influences that probability.
+		
+		- Once we have the probability p, we can easily classify outcomes:
+			- If p>0.5, predict 1
+			- If p≤0.5, predict 0	
+		- This simple threshold converts a smooth probability curve into a crisp decision boundary.
+
+*What do mean by log-Odds (The "Logit")*
+
+- The term Logistic Regression actually comes from modeling the log-odds (also known as the logit) of the probability.
+- Odds represent how much more likely an event is to happen than not to happen:
+	- Odds=p/(1−p)
+	- Taking the logarithm gives us the log-odds:
+	- $logit(p) = \log{\frac{1}{1-p}} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n$
+	- This relationship is linear in the coefficients.
+
+*Why it matters?*
+- Logistic Regression is often the first classification model every data scientist learns — and for good reason:
+	- It’s mathematically interpretable — you can explain exactly how each feature affects the odds of an outcome.
+	- It’s computationally efficient, even on large datasets.
+	- It provides probability estimates, not just hard labels.
+	- And it forms the foundation for more advanced models like neural networks and generalized linear models (GLMs).
+
+*What are the assumptions of Logistic Regression?*
+
+- The Dependent variable is Binary (or Categorical)
+	- Logistic Regression is designed for classification problems — typically binary ones.
+	- That means your target variable should represent two possible outcomes:
+		- 1 = Event happens (e.g., customer churns, email is spam)
+		- 0 = Event does not happen
+	- When you have more than two categories, you can use extensions like 
+	Multinomial Logistic Regression (for multiple classes) or Ordinal Logistic Regression (for ordered categories).
+
+- Independence of Observations
+	- Each observation in your dataset should be independent of others.
+		- For example, if you’re predicting whether users will buy a product, each 
+		user should be treated as a separate, unrelated case.
+	- If the data points are correlated — say, multiple transactions from the same customer or repeated measures from the same patient 
+	the model’s standard errors and significance tests become unreliable.
+	- In such cases, we often turn to Generalized Estimating Equations (GEE) or Mixed-Effects Logistic Regression, 
+	which account for correlated data.
+
+- Linearity between Features and Log-odds
+	- This is one of the misunderstood assumptions.
+	- Logistic Regression doesn’t assume a linear relationship between predictors and the target variable itself.
+	Instead, it assumes a linear relationship between the independent variables and the log-odds of the dependent variable.
+	- $logit(p) = \log{\frac{1}{1-p}} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n$
+	That means each feature’s contribution is additive in the log-odds space, not directly in probability space.
+	If this linearity assumption is violated, the model can misrepresent relationships, leading to biased predictions.
+
+- No (or Minimal) Multicollinearity
+	- Multicollinearity occurs when independent variables are highly correlated with each other.
+	- This makes it difficult for the model to determine the unique effect of each variable — inflating variance in coefficient estimates.
+
+	- *How to detect multicollinearity?*
+		- Variance Inflation Factor (VIF) — values above 5 (or 10) suggest trouble.
+		- Correlation matrices — to identify redundant features.
+		- To fix it, you can remove correlated variables, use Principal Component Analysis (PCA), 
+		or apply regularization (like Ridge or Lasso Logistic Regression).
+
+- Sufficiently Large Sample Size
+	- Logistic Regression relies on Maximum Likelihood Estimation (MLE) to find the best-fitting coefficients.
+	- MLE performs better with larger sample sizes — because it needs enough data to estimate probabilities accurately, 
+	especially for the minority class.
+
+*How Logistic Regression is Optimized?*
+
+- Logistic Regression relies on a powerful idea from statistics called Maximum Likelihood Estimation (MLE) — 
+it learns the parameters that make the observed data most probable under the model.
+
+- From Probabilities to Likelihood
+	- For each data point i, the model predicts the probability of the positive class as:
+		- $P(y=1 \mid \mathbf{x}) = \frac{1}{1 + e^{-\left(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n\right)}}$
+		
+		- pi = predicted probability that yi=1
+		- xij = value of feature j for sample i
+		- Bj = weight(coefficient) the model is trying to learn.
+	- Now, depending on whether the true label yi​ is 0 or 1, the probability of observing that label is:
+		- $P(y_i) = p_i^{y_i} (1-p_i)^{(1-y_i)}$
+			- If yi=1, the probability is pi​.
+			- If yi=0, the probability is 1−pi.
+			So this formula elegantly handles both cases in one expression.
+	- For all m observations, we multiply these probabilities together (assuming independence) to get the likelihood:
+		- $\mathcal{L}(\boldsymbol{\beta}) = \prod_{i=1}^{m} p_i^{y_i} (1-p_i)^{(1-y_i)}$
+		- This is the probability of the entire dataset given the parameters β. The goal is to find the coefficients that make this overall likelihood as large as possible (Maximum Likelihood Estimation)
+
+- The Log-Likelihood Function
+	- Products of many small probabilities can quickly underflow to zero numerically, 
+	so we take the logarithm (which turns products into sums) to get the log-likelihood:
+		- $\ell(\boldsymbol{\beta}) =\sum_{i=1}^{m}\left[y_i\log{(p_i)}+(1 - y_i)\log{(1 - p_i)}\right]$
+		
+	- Each data point contributes to the overall score depending on how confident and correct the model was:
+		- If the model correctly predicts a high pip_ipi​ for a positive sample, log(pi) is large → high reward.
+		- If it predicts a low pip_ipi​ for a positive sample, log(pi) is very negative → strong penalty.
+		That’s why the model “learns” by maximizing this function — it’s literally rewarding correct confidence and punishing confident mistakes.
+	- The optimization goal is:
+		- $max_{\beta} \ell(\boldsymbol{\beta})$
+		or equivalently (since maximization and minimization are mirror problems):
+		- $max_{\beta} -\ell(\boldsymbol{\beta})$
+
+	- The negative log-likelihood is what’s commonly known as the Binary Cross-Entropy Loss or Log Loss:
+		- $\ell(\boldsymbol{\beta}) = -\frac{1}{m} \sum_{i=1}^{m}\left[y_i\log{(p_i)}+(1 - y_i)\log{(1 - p_i)}\right]$
+	
+	- Log Loss measures how uncertain or wrong the model is.
+	- A perfect model has Log Loss = 0.
+	- As predictions become uncertain (closer to 0.5), the penalty increases sharply — reflecting the cost of indecision.
+	
+	- For Learning Mechanism:
+		- we use Gradient Descent, an iterative optimization algorithm.
+		- Over time, the model “descends” to the set of parameters that minimize the loss — i.e., maximize the likelihood.
+	- When features are many or correlated, Logistic Regression can overfit — memorizing patterns that don’t generalize.
+		- To fix that, we add regularization, a penalty term that discourages overly large coefficients.
+		- L2 Regularization (Ridge Regression)
+		- L1 Regualrization (Lasso Regression)
+		
+
+
+- At a High Level:
+	- Logistic Regression tries to find parameters that maximize the likelihood of seeing your data.
+	- The math turns that problem into minimizing Log Loss.
+	- Gradient Descent adjusts parameters step by step to find the best fit.
+	- Regularization keeps the model from memorizing noise.
+
+
+*Explain the Common Evaluation Metrics Used for Classification*
+
+- There are different key evaluation metrics that tell the true story
+of model's performance.
+
+- **The Confusion Matrix**
+	- Every evaluation metrics stems from one simple concept - the confusion matrix
+	- It compares the model's predicted labels with the actual ones.
+		-			predicted:1			predicted:0
+		- Actual:1		TP					FN
+		- Actual:0		FP					TN
+		
+		- TP(True Positive): Model correctly predicts the positive class.
+		- TN(True Negative): Model correctly predicts the negative class.
+		- FP(False Positive): Model incorrectly predicts positive class. (model predicts postive but actual is negative)
+		- FN(False Negative): Model incorrectly predicts the negative class. (model predicts negative but actual is positve)
+- **Accuracy**
+	- Accuracy tells you how often the model was correct overall.
+	- $Accuracy = \frac{TP+TN}{TP+FP+TN+FN}$
+	- **Intution**
+		- Accuracy is great when both classes are equally important and balanced.
+		But if the dataset is 95% "No Fraud" and 5% "Fraud", model that always predicts
+		"No Fraud" will still be 95% accurate - yet completely useless.
+		
+- **Precision**
+	- $Precision = \frac{TP}{TP+FP}$
+	- Precison answers the question-Of all the positve predictions the model made,
+	how many were actually correct?
+	- High precision means when it says "Positive" , it is usualy right. 
+	- For example: in fraud detection, high precision means you're not falsely accusing legitimate transactions.
+
+- **Recall(Sensitivity or True Positive Rate)**
+	- $Recall = \frac{TP}{TP+FN}$
+	- Recall measures how many of the actual positives the model managed to catch.
+	- In other words: Out of all the fraudulent transactions, how many did the model detect?
+	- High recall means fewer missed positives - but possibly more false alarms.
+
+- **F1-Score: The Balance Between Precision and Recall**
+	- $Accuracy = 2 * \frac{Precision * Recall}{Precision + Recall}$
+	- F1 is the harmonic mean of precision and recall.
+	- It's high only when both are high - making it a balanced metric for imbalanced datasets.
+	- Why use the harmonic mean instead of the arithmetic mean?
+		- Harmonic mean penalizes extreme imbalances - e.g., high precision but very low recall.
+
+- **ROC Curve and AUC (Area Under Curve)**
+	- The ROC curve (Receiver Operating Characteristic curve) plots:
+		- X-axis: False Positive Rate (FPR)
+		- Y-axis: True Positive Rate (TPR = Recall)
+		- $TPR = \frac{TP}{TP+FN}$, $FPR = \frac{FP}{FP+TN}$
+	- The AUC (Area Under Curve) summarizes this curve into a single number between 0 and 1.
+		- AUC = 0.5 -> model is guessing randomly.
+		- AUC = 1.0 -> prefect seperation between classes.
+		- AUC = 0.8 -> on average, model ranks a random positive higher than a random negative 80% of the time.
+		- AUC is particularly valuable when your data is imbalanced because it measures ranking quality - not just accuracy at one threshold.
+		
+- **Choosing the Right Metric**
+	- Scenario							Best Metric(s)							Why
+	- Balanced datasets					Accuracy, F1							All classes equally important
+	  Imbalancedd dataset				F1, ROC-AUC, Precision/Recall			Focus on minority class
+	  High cost for false positives		Precsion 								e.g., flagging legitimate transactions
+	  High cost for false negatives		Recall 									e.g., detecting cancer, fraud 
+	  Probabilitic calibration matters	Log Loss								Measure how confident your model model should
+	  
+	 - Each metric highlights a different aspect of model performance:
+		- Accuracy tells you how often you're right.
+		- Precision tells you how trustworthy your positive predicitions are.
+		- Recall tells you how complete your detection is.
+		- F1 balances Precision and Recall
+		- AUC tells you how well your model seperates classes overall.
+		- Log Loss tells you how confident and calibrated your probabilities are. 
+		
+
+**Important Practise and Common pitfalls - how to avoid them.**
+
+- Always Scale or Normalize Continuous Features
+	- Standardize or normalize the features before training
+		- `from sklean.preprocessing import StandardScaler
+		  scaler = StandardScaler()
+		  X_scaled = scaler.fit_tranform(X)`
+		  
+		 - Scaling ensures the optimization landscape is smooth, allowing the gradient
+		 descent to converge efficiently without oscillations.
+		 
+- Handle Categorical Variables Properly
+	- Categorical features must be encoded (like city, department, or product-type)
+	- Common Encoding methods:
+		- One-Hot Encoding: for nominal categories (e.g "Red", "Green", "Blue")
+		- Ordinal Encoding: for ordered categories (e.g "Low", "Medium", "High")
+		
+	- Pitfall to avoid:
+		- including all dummy varibales without dropping one can cause prefect multicollinearity - known as the dummy varibale trap
+		- pd.get_dummies(df['colo'], drop_first=True)
+		
+- Watch Out for Multicollinearity
+	- Highly correlated predictors make it difficult for the model to estimate the unique effect of each variable — leading to unstable coefficients.
+	- Detect it:
+		- Use the Variance Inflation Factor (VIF)
+		- `from statsmodels.stats.outliers_influence import variance_inflation_factor
+			vif = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])`
+		- Fix it:
+			- Drop redundant variables
+			- Combine correlated features (e.g., take averages)
+			- Use L2 regularization (Ridge) to shrink correlated coefficients smoothly
+			- Rule of thumb: VIF > 5 (or 10) indicates serious multicollinearity.
+- Regualrization
+	- add a penalty to control model complexity:
+		- L1 (Lasso): useful for sparse models and feature selection
+		- L2 (Ridge): preferred when most features are relevant.
+		
+- Careful with Imbalanced Data
+	- In cases like fraud detection or rare disease prediction, the positive class might be <5% of all samples. 
+	A model that predicts “no fraud” every time could have 95% accuracy — but be completely useless.
+
+	- Best practices:
+		- Use stratified train-test splits so both sets preserve class balance.
+		- Evaluate using Precision, Recall, F1, or ROC-AUC, not just accuracy.
+		- Adjust class weights or decision thresholds.
+		- Try SMOTE (Synthetic Minority Oversampling Technique) to generate synthetic minority examples.
+		
 
 
 
