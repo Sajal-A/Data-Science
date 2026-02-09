@@ -21,11 +21,4 @@ Welcome to the **Data Science Repository**! This is your go-to resource for expl
 - **End-to-End Tutorials:** Learn step-by-step, from data preprocessing to model deployment.  
 - **Beginner-Friendly:** Resources tailored for all skill levels.  
 
----
-
-## 🚀 Get Started  
-
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/yourusername/data-science-repo.git
 
